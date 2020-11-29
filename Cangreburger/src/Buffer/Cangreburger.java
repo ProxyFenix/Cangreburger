@@ -1,7 +1,7 @@
 package Buffer;
 
 public class Cangreburger {
-	private int cantidad;
+	private int cantidad = 0;
 	private boolean cocinada = false;
 	
 	
@@ -17,7 +17,7 @@ public class Cangreburger {
 		}
 		cocinada = false;
 		notifyAll();
-		return cantidad;
+		return cantidad--;
 	}
 	
 	public synchronized void meter(int valor) {
