@@ -3,10 +3,13 @@ package Hilos;
 import java.util.Random;
 
 import Buffer.Cangreburger;
+import SeccionCritica.CocinerosRabiosos;
 
 public class PecesHambrientos extends Thread {
 	private Cangreburger burger;
 	private int idNumero;
+	private CocinerosRabiosos cocinero;
+	private boolean esperando;
 	
 	public PecesHambrientos (Cangreburger burger, int id) {
 		this.burger = burger;
@@ -17,18 +20,27 @@ public class PecesHambrientos extends Thread {
 	@Override
 	public void run() {
 		int contador = 0;
+		esperando = false;
+		cocinero = new CocinerosRabiosos(burger, idNumero);
 		while (true) {
-			if (burger.getCantidad() == 0) {
+			if ((burger.getCantidad() == 0) && (cocinero.getAmborguesa() == 0)) {
 				try {
-					wait();
+					Thread.sleep(rng());
+					esperando = true;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+			
+			} else if ((burger.getCantidad() != 0) && (cocinero.getAmborguesa() == 0)) {
+				contador = burger.pillar();
+			} else if ((burger.getCantidad() == 0) && (cocinero.getAmborguesa() != 0)) {
+				contador++;
 			}
-			contador = burger.pillar();
-			System.out.println("Cangreburgers comidas por " + idNumero + " cliente : " + contador);
+
+			System.out.println("Cangreburgers comidas por " + this.idNumero + " cliente : " + contador);
 			try {
 				Thread.sleep(rng());
+				esperando = true;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -62,6 +74,16 @@ public class PecesHambrientos extends Thread {
 
 	public void setIdNumero(int id) {
 		this.idNumero = id;
+	}
+
+
+	public boolean isEsperando() {
+		return esperando;
+	}
+
+
+	public void setEsperando(boolean esperando) {
+		this.esperando = esperando;
 	}
 
 	
